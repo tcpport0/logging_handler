@@ -46,8 +46,7 @@ jobs:
           # Upload wheel file with verbose output
           WHEEL_FILE=$(ls dist/*.whl)
           echo "Uploading wheel file: $WHEEL_FILE"
-          curl -v -X POST "https://pypi.tisrv.com/upload/" \
-          -H "Authorization: Bearer $AUTH_TOKEN" \
+          curl -v -X POST "https://pypi.tisrv.com/upload/?token=$AUTH_TOKEN" \
           -F "file=@$WHEEL_FILE" \
           -F "title=${{ env.package_name }}" \
           -F "description=${{ env.description }}" \
@@ -56,8 +55,7 @@ jobs:
           # Upload source distribution with verbose output
           SDIST_FILE=$(ls dist/*.tar.gz)
           echo "Uploading source distribution: $SDIST_FILE"
-          curl -v -X POST "https://pypi.tisrv.com/upload/" \
-          -H "Authorization: Bearer $AUTH_TOKEN" \
+          curl -v -X POST "https://pypi.tisrv.com/upload/?token=$AUTH_TOKEN" \
           -F "file=@$SDIST_FILE" \
           -F "title=${{ env.package_name }}" \
           -F "description=${{ env.description }}" \
