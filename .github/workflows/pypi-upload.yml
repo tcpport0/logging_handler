@@ -32,7 +32,6 @@ jobs:
           SPLUNK_EVENTS_TOKEN: "dummy_token"
           SPLUNK_METRICS_TOKEN: "dummy_token"
         run: |
-          # Direct version extraction without importing the package
           VERSION=$(grep "__version__ = " src/logging_handler/_version.py | cut -d"'" -f2)
           PACKAGE_NAME="logging_handler"
           
@@ -44,9 +43,20 @@ jobs:
         env:
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         run: |
+          # Upload wheel file
+          WHEEL_FILE=$(ls dist/*.whl)
           curl -X POST "https://pypi.tisrv.com/upload/" \
           -H "Authorization: Bearer $AUTH_TOKEN" \
-          -F "file=@dist/*" \
+          -F "file=@$WHEEL_FILE" \
+          -F "title=${{ env.package_name }}" \
+          -F "description=${{ env.description }}" \
+          -F "version=${{ env.version }}"
+          
+          # Upload source distribution
+          SDIST_FILE=$(ls dist/*.tar.gz)
+          curl -X POST "https://pypi.tisrv.com/upload/" \
+          -H "Authorization: Bearer $AUTH_TOKEN" \
+          -F "file=@$SDIST_FILE" \
           -F "title=${{ env.package_name }}" \
           -F "description=${{ env.description }}" \
           -F "version=${{ env.version }}"
