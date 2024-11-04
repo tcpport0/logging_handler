@@ -1,0 +1,44 @@
+name: Upload to Private PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Build package
+        run: |
+          python setup.py sdist bdist_wheel
+
+      - name: Extract Metadata
+        id: extract_metadata
+        run: |
+          # Extract metadata from the built package
+          PACKAGE_NAME=$(python setup.py --name)
+          DESCRIPTION=$(python setup.py --description)
+          VERSION=$(python setup.py --version)
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "description=$DESCRIPTION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Upload to Private PyPI
+        env:
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        run: |
+          # Use extracted metadata during upload
+          curl -X POST "https://{{ domain }}/upload/" \
+          -H "Authorization: Bearer $AUTH_TOKEN" \
+          -F "file=@dist/*" \
+          -F "title=${{ env.package_name }}" \
+          -F "description=${{ env.description }}" \
+          -F "version=${{ env.version }}"
