@@ -9,54 +9,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.12'
 
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build twine wheel tomli
+          pip install build twine
 
       - name: Build package
         run: python -m build
 
-      - name: Extract Metadata
-        id: extract_metadata
-        env:
-          SPLUNK_EVENTS_TOKEN: "dummy_token"
-          SPLUNK_METRICS_TOKEN: "dummy_token"
-        run: |
-          VERSION=$(grep "__version__ = " src/logging_handler/_version.py | cut -d"'" -f2)
-          PACKAGE_NAME="logging_handler"
-          
-          echo "package_name=$PACKAGE_NAME" >> $GITHUB_ENV
-          echo "version=$VERSION" >> $GITHUB_ENV
-          echo "description=A Python logging handler with Splunk support for events and metrics" >> $GITHUB_ENV
-
       - name: Upload to Private PyPI
         env:
-          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_REPOSITORY_URL: https://pypi.tisrv.com
         run: |
-          # Upload wheel file with verbose output
-          WHEEL_FILE=$(ls dist/*.whl)
-          echo "Uploading wheel file: $WHEEL_FILE"
-          curl -v -X POST "https://pypi.tisrv.com/upload/?token=$AUTH_TOKEN" \
-          -F "file=@$WHEEL_FILE" \
-          -F "title=${{ env.package_name }}" \
-          -F "description=${{ env.description }}" \
-          -F "version=${{ env.version }}"
-          
-          # Upload source distribution with verbose output
-          SDIST_FILE=$(ls dist/*.tar.gz)
-          echo "Uploading source distribution: $SDIST_FILE"
-          curl -v -X POST "https://pypi.tisrv.com/upload/?token=$AUTH_TOKEN" \
-          -F "file=@$SDIST_FILE" \
-          -F "title=${{ env.package_name }}" \
-          -F "description=${{ env.description }}" \
-          -F "version=${{ env.version }}"
+          twine upload --verbose dist/*
