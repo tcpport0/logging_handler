@@ -44,7 +44,7 @@ jobs:
         env:
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         run: |
-          curl -X POST "https://{{ domain }}/upload/" \
+          curl -X POST "https://pypi.tisrv.com/upload/" \
           -H "Authorization: Bearer $AUTH_TOKEN" \
           -F "file=@dist/*" \
           -F "title=${{ env.package_name }}" \
