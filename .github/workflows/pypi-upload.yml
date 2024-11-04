@@ -43,20 +43,22 @@ jobs:
         env:
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         run: |
-          # Upload wheel file
+          # Upload wheel file with verbose output
           WHEEL_FILE=$(ls dist/*.whl)
-          curl -X POST "https://pypi.tisrv.com/upload/" \
+          echo "Uploading wheel file: $WHEEL_FILE"
+          curl -v -X POST "https://pypi.tisrv.com/upload/" \
           -H "Authorization: Bearer $AUTH_TOKEN" \
           -F "file=@$WHEEL_FILE" \
-          -F "package_name=${{ env.package_name }}" \
-          -F "package_version=${{ env.version }}" \
-          -F "description=${{ env.description }}"
+          -F "title=${{ env.package_name }}" \
+          -F "description=${{ env.description }}" \
+          -F "version=${{ env.version }}"
           
-          # Upload source distribution
+          # Upload source distribution with verbose output
           SDIST_FILE=$(ls dist/*.tar.gz)
-          curl -X POST "https://pypi.tisrv.com/upload/" \
+          echo "Uploading source distribution: $SDIST_FILE"
+          curl -v -X POST "https://pypi.tisrv.com/upload/" \
           -H "Authorization: Bearer $AUTH_TOKEN" \
           -F "file=@$SDIST_FILE" \
-          -F "package_name=${{ env.package_name }}" \
-          -F "package_version=${{ env.version }}" \
-          -F "description=${{ env.description }}"
+          -F "title=${{ env.package_name }}" \
+          -F "description=${{ env.description }}" \
+          -F "version=${{ env.version }}"
