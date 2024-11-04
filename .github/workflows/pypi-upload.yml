@@ -48,15 +48,15 @@ jobs:
           curl -X POST "https://pypi.tisrv.com/upload/" \
           -H "Authorization: Bearer $AUTH_TOKEN" \
           -F "file=@$WHEEL_FILE" \
-          -F "title=${{ env.package_name }}" \
-          -F "description=${{ env.description }}" \
-          -F "version=${{ env.version }}"
+          -F "package_name=${{ env.package_name }}" \
+          -F "package_version=${{ env.version }}" \
+          -F "description=${{ env.description }}"
           
           # Upload source distribution
           SDIST_FILE=$(ls dist/*.tar.gz)
           curl -X POST "https://pypi.tisrv.com/upload/" \
           -H "Authorization: Bearer $AUTH_TOKEN" \
           -F "file=@$SDIST_FILE" \
-          -F "title=${{ env.package_name }}" \
-          -F "description=${{ env.description }}" \
-          -F "version=${{ env.version }}"
+          -F "package_name=${{ env.package_name }}" \
+          -F "package_version=${{ env.version }}" \
+          -F "description=${{ env.description }}"
