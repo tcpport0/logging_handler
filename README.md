@@ -14,7 +14,7 @@ A Python logging handler with built-in support for Splunk events and metrics, wi
 
 ## Installation
 ```
-pip install logging-handler
+pip install ti-logging-handler
 ```
 
 ## Configuration
@@ -46,7 +46,7 @@ export AWS_REGION="us-west-2"
 
 ### Basic Logging
 ```
-from logging_handler import logger
+from ti_logging_handler import logger
 
 # Simple logging
 logger.info("User logged in", context={"user_id": "123"})
