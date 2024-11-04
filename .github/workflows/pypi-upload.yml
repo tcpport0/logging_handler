@@ -28,14 +28,14 @@ jobs:
 
       - name: Extract Metadata
         id: extract_metadata
+        env:
+          SPLUNK_EVENTS_TOKEN: "dummy_token"
+          SPLUNK_METRICS_TOKEN: "dummy_token"
         run: |
-          # Extract version from _version.py
-          VERSION=$(python -c "import sys; sys.path.append('src'); from logging_handler._version import __version__; print(__version__)")
-          
-          # Get package name from directory
+          # Direct version extraction without importing the package
+          VERSION=$(grep "__version__ = " src/logging_handler/_version.py | cut -d"'" -f2)
           PACKAGE_NAME="logging_handler"
           
-          # Set environment variables
           echo "package_name=$PACKAGE_NAME" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_ENV
           echo "description=A Python logging handler with Splunk support for events and metrics" >> $GITHUB_ENV
